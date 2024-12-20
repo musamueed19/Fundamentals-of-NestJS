@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AnswerDto } from './dto/app.dto';
 
@@ -15,7 +15,7 @@ export class AppController {
   // Customized GET route
   @Get('/askquestion')
   askQuestion(): string {
-    return "How are you?";
+    return 'How are you?';
   }
 
   // Using Body data as DTO - POST request
@@ -23,15 +23,28 @@ export class AppController {
   answer(@Body() getAnswerDto: AnswerDto): object {
     return {
       answer: getAnswerDto.answer,
-    }
+    };
   }
 
-
   // We have to define routes - using Route Parameters - at the end of controllers
+  // @Get(':id')
+  // getRouteParam(@Param('id') userId): object {
+  //   return {
+  //     userId: userId,
+  //   };
+  // }
+
+  // Now we are Here to modify our above endpoint more scaleable, robust, and more functional
   @Get(':id')
-  getRouteParam(@Param('id') userId): object {
+  getQueryStrings(
+    @Query('name') userName,
+    @Query('role') userRole,
+    @Param('id') userId,
+  ): object {
     return {
-      userId: userId, 
-    }
+      userId,
+      userName,
+      userRole
+    };
   }
 }
