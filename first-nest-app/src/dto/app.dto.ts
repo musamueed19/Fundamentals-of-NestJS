@@ -1,3 +1,3 @@
 export class AnswerDto {
-  answer;
+  answer: string;
 }
