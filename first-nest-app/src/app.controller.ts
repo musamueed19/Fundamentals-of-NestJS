@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { AnswerDto } from './dto/app.dto';
 
@@ -7,9 +16,22 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   // Root Route - endpoint
+
+  // Modifying the route to handle request and response
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHello(@Req() req, @Res() res): void {
+    // return this.appService.getHello();
+
+    // getting client-side request data
+    console.log(req);
+    console.log('----------');
+    console.log(req.headers);
+
+    // Now returing customized response
+    res.status(200).json({
+      success: true,
+      res: this.appService.getHello(),
+    });
   }
 
   // Customized GET route
@@ -19,11 +41,25 @@ export class AppController {
   }
 
   // Using Body data as DTO - POST request
+
+  // We are now updating our 'answer' route to respond on the basis of request body sent
   @Post('/answer')
-  answer(@Body() getAnswerDto: AnswerDto): object {
-    return {
-      answer: getAnswerDto.answer,
-    };
+  answer(@Body() getAnswerDto: AnswerDto, @Req() req, @Res() res): void {
+    let response, status;
+
+    if (req.body.answer.includes('fine')) {
+      response = 'Alhamdulliah, I am also fine';
+      status = 200;
+    } else {
+      response = 'Oh! What happened?';
+      status = 400;
+    }
+    res.status(status).json({
+      success: status < 500,
+      res: {
+        answer: response,
+      },
+    });
   }
 
   // We have to define routes - using Route Parameters - at the end of controllers
@@ -44,7 +80,7 @@ export class AppController {
     return {
       userId,
       userName,
-      userRole
+      userRole,
     };
   }
 }
