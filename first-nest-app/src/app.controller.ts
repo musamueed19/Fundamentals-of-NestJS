@@ -10,10 +10,14 @@ import {
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AnswerDto } from './dto/app.dto';
+import { SumService } from './service/sum/sum-service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly sumService: SumService,
+  ) {}
 
   // Root Route - endpoint
 
@@ -47,7 +51,7 @@ export class AppController {
   answer(@Body() getAnswerDto: AnswerDto, @Req() req, @Res() res): void {
     let response, status;
 
-    if (req.body.answer.includes('fine')) {
+    if (req.body.answer?.includes('fine')) {
       response = 'Alhamdulliah, I am also fine';
       status = 200;
     } else {
@@ -62,14 +66,22 @@ export class AppController {
     });
   }
 
+  // Now, we are creating an end point
+  @Get('/sum')
+  sumOfTwoNums(@Query('n1') a, @Query('n2') b): object {
+    return {
+      sum: this.sumService.getSum(+a, +b),
+    };
+  }
+  
   // We have to define routes - using Route Parameters - at the end of controllers
   // @Get(':id')
   // getRouteParam(@Param('id') userId): object {
-  //   return {
+    //   return {
   //     userId: userId,
   //   };
   // }
-
+  
   // Now we are Here to modify our above endpoint more scaleable, robust, and more functional
   @Get(':id')
   getQueryStrings(
@@ -83,4 +95,6 @@ export class AppController {
       userRole,
     };
   }
+  
+
 }
